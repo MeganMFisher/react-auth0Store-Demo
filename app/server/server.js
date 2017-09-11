@@ -24,6 +24,8 @@ app.use(passport.session());
 //DATABASE CONNECTION
 massive(process.env.CONNECTIONSTRING).then( db => {
     app.set('db', db);
+
+
 })
 
 //AUTHENTICATION
@@ -39,7 +41,7 @@ passport.use(new Auth0Strategy({
         if(user[0]) {
             return done(null, user);
         } else {
-            db.create_user([profile.displayName, profile.emails[0].value, profile.picture, profile.id]).then( user => {
+            db.create_user([profile.displayName, profile.picture, profile.id]).then( user => {
                 return done(null, user[0]);
             })
         }
