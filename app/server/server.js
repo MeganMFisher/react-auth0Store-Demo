@@ -42,7 +42,7 @@ passport.use(new Auth0Strategy({
         if(user[0]) {
             return done(null, user);
         } else {
-            db.create_user([profile.displayName, profile.picture, profile.id]).then( user => {
+            db.create_user([profile.displayName, profile.id]).then( user => {
                 return done(null, user[0]);
             })
         }
