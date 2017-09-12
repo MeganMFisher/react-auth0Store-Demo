@@ -25,7 +25,8 @@ app.use(passport.session());
 massive(process.env.CONNECTIONSTRING).then( db => {
     app.set('db', db);
 
-
+    app.get('db').init.seed_file().then(res => console.log(res))
+    .catch(err => console.log(err))
 })
 
 //AUTHENTICATION
