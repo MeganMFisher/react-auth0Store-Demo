@@ -82,6 +82,13 @@ app.get('/auth/logout', (req, res) => {
 })
 
 
+app.get('/api/products', (req, res) => {
+    app.get('db').get_products().then(products => {
+        return res.send(products)
+    })
+})
+
+
 app.listen(process.env.PORT, () => {
     console.log('Listening on port ' + process.env.PORT)
 })
