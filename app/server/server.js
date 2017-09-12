@@ -25,8 +25,8 @@ app.use(passport.session());
 massive(process.env.CONNECTIONSTRING).then( db => {
     app.set('db', db);
 
-    app.get('db').init.seed_file().then(res => console.log(res))
-    .catch(err => console.log(err))
+    // app.get('db').init.seed_file().then(res => console.log(res))
+    // .catch(err => console.log(err))
 })
 
 //AUTHENTICATION
@@ -36,8 +36,8 @@ passport.use(new Auth0Strategy({
     clientSecret: process.env.AUTH_CLIENT_SECRET,
     callbackURL: process.env.AUTH_CALLBACK
 }, function(accessToken, refreshToken, extraParams, profile, done) {
-    const db = app.get('db');
 
+   const db = app.get('db');
    db.find_user(profile.id).then( user => {
         if(user[0]) {
             return done(null, user);
@@ -54,14 +54,15 @@ passport.serializeUser(function(user, done) {
 })
 
 passport.deserializeUser(function(user, done) {
-    app.get('db').userAndCart(user[0].id).then( user => {
+    app.get('db').getUserCart(user[0].id).then( user => {
+        console.log(user)
         return done(null, user[0]);
     })
 })
 
 app.get('/auth', passport.authenticate('auth0', {
-    successRedirect: 'http://localhost:3000/#/private',
-    failureRedirect: 'http://localhost:3000/#/'
+    successRedirect: 'http://localhost:4011/#/store',
+    failureRedirect: 'http://localhost:4011/#/'
 }));
 
 app.get('/auth/me', (req, res) => {

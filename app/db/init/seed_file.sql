@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   auth_id TEXT 
 );
 
+-- INSERT INTO users (name, auth_id) 
+-- VALUES ('Megan', 'fb123');
 
 CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY, 
@@ -29,8 +31,14 @@ CREATE TABLE IF NOT EXISTS orders (
     userId INTEGER REFERENCES users (id)
 );
 
+-- INSERT INTO orders(userId)
+-- VALUES (1);
+
 CREATE TABLE IF NOT EXISTS cart (
     productId INTEGER REFERENCES products (id),
     orderId INTEGER REFERENCES orders (id),
     quantity INTEGER 
 );
+
+-- INSERT INTO cart(productId, orderId, quantity)
+-- VALUES(2, 1, 1)
