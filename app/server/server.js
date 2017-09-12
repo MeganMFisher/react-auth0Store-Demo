@@ -50,10 +50,12 @@ passport.use(new Auth0Strategy({
 }))
 
 passport.serializeUser(function(user, done) {
+    console.log('Serialize', user)
     done(null, user)
 })
 
 passport.deserializeUser(function(user, done) {
+    console.log('Deserialize', user)
     app.get('db').getUserCart(user[0].id).then( user => {
         console.log(user)
         return done(null, user[0]);
@@ -66,6 +68,7 @@ app.get('/auth', passport.authenticate('auth0', {
 }));
 
 app.get('/auth/me', (req, res) => {
+    console.log('req.user: ', req.user)
     if(!req.user) {
         return res.status(404).send('User not found')
     } else {
