@@ -6,8 +6,10 @@ export default class Store extends Component {
         super();
 
         this.state = {
-            products: []
+            products: [],
         }
+
+        this.addToCart = this.addToCart.bind(this)
     }
 
 
@@ -22,15 +24,21 @@ export default class Store extends Component {
         })
     }
 
+    addToCart(productId) {
+       return axios.post('/api/addToCart/', productId).then(response => {
+           console.log(response)
+       })
+    }
+
     render() {
         var products = this.state.products.map((product, i) => {
             return (
                 <div key={i} className='product'>
                     <h2>{ product.name }</h2>
-                    <img src={ product.image } />
+                    <img src={ product.image } alt=''/>
                     <h4>${ product.price }</h4>
                     <h5>{ product.description }</h5>
-                    <button>Add to Cart</button>
+                    <button onClick={ () => this.addToCart(product.id) }>Add to Cart</button>
                 </div>
             )
         })

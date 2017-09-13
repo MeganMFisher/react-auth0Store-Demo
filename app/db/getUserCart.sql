@@ -5,6 +5,8 @@
 -- JOIN products ON cart.productId = products.id
 -- WHERE users.auth_id = $1;
 
-SELECT * 
+SELECT users.*, orders.id AS orderid
 FROM users
-WHERE id = $1;
+JOIN orders 
+ON orders.userId = users.id
+WHERE orders.complete = false && user.id = $1;

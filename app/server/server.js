@@ -5,7 +5,10 @@ const express = require('express')
     , massive = require('massive')
     , passport = require('passport')
     , Auth0Strategy = require('passport-auth0')
-    , session = require('express-session');
+    , session = require('express-session')
+    , orderCtrl = require('./controllers/orders_controller')
+    , productCtrl = require('./controllers/products_controller')
+    , cartCtrl = require('./controllers/cart_controller');
 
 
 const app = express()
@@ -17,6 +20,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -25,8 +29,8 @@ app.use(passport.session());
 massive(process.env.CONNECTIONSTRING).then( db => {
     app.set('db', db);
 
-    // app.get('db').init.seed_file().then(res => console.log(res))
-    // .catch(err => console.log(err))
+    app.get('db').init.seed_file().then(res => console.log(res))
+    .catch(err => console.log(err))
 })
 
 //AUTHENTICATION
@@ -50,12 +54,10 @@ passport.use(new Auth0Strategy({
 }))
 
 passport.serializeUser(function(user, done) {
-    console.log('Serialize', user)
     done(null, user)
 })
 
 passport.deserializeUser(function(user, done) {
-    console.log('Deserialize', user)
     app.get('db').getUserCart(user[0].id).then( user => {
         console.log(user)
         return done(null, user[0]);
@@ -81,13 +83,20 @@ app.get('/auth/logout', (req, res) => {
     return res.redirect(302, 'http://localhost:3000/#/'); 
 })
 
+// ORDERS
+app.post('/api/createOrder/:userid', orderCtrl.createOrder);
+app.put('/api/completeThenCreaterOrder/:orderid/:userid', orderCtrl.completeOrder, orderCtrl.createOrder);
+app.get('/api/order/:userid', orderCtrl.getUserOrder);
+app.get('/api/completedOrder:userid', orderCtrl.getUserHistory);
 
-app.get('/api/products', (req, res) => {
-    app.get('db').get_products().then(products => {
-        return res.send(products)
-    })
-})
+//PRODUCTS
+app.get('/api/products', productCtrl.getProducts);
 
+// CART 
+app.get('/api/getCart/:cartid', cartCtrl.getCart);
+app.post('/api/addToCart/:cartid', cartCtrl.addToCart);
+app.put('/api/update/qty/:productid', cartCtrl.updateProductInCart);
+app.delete('/api/deleteFromCart/:productid', cartCtrl.deleteProductInCart);
 
 app.listen(process.env.PORT, () => {
     console.log('Listening on port ' + process.env.PORT)
